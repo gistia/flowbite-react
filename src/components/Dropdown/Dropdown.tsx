@@ -2,8 +2,9 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 
 import type { ComponentProps, Dispatch, FC, PropsWithChildren, ReactElement, ReactNode, SetStateAction } from 'react';
-import React, { Children, useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
+import React, { Children, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { HiOutlineChevronDown, HiOutlineChevronLeft, HiOutlineChevronRight, HiOutlineChevronUp } from 'react-icons/hi';
+import { uniqueId } from '~/src/helpers/unique-id';
 import type { ButtonProps, DeepPartial } from '../../';
 import { Button, useTheme } from '../../';
 import type { FloatingProps, FlowbiteFloatingTheme } from '../../components/Floating';
@@ -60,7 +61,6 @@ const DropdownComponent: FC<DropdownProps> = ({
   theme: customTheme = {},
   ...props
 }) => {
-  const id = useId();
   const theme = mergeDeep(useTheme().theme.dropdown, customTheme);
   const theirProps = props as Omit<DropdownProps, 'theme'>;
   const {
@@ -90,8 +90,10 @@ const DropdownComponent: FC<DropdownProps> = ({
         return React.cloneElement(node, {
           // @ts-ignore TODO: Rewrite Dropdown
           onClick: () => {
+            const key = uniqueId();
+
             node.props.onClick?.();
-            dismissOnClick && setCloseRequestKey(id);
+            dismissOnClick && setCloseRequestKey(key);
           },
         });
       if (node.props.children && typeof node.props.children === 'object') {
@@ -102,7 +104,7 @@ const DropdownComponent: FC<DropdownProps> = ({
       }
       return node;
     },
-    [dismissOnClick, id],
+    [dismissOnClick],
   );
 
   const content = useMemo(

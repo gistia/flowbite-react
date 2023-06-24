@@ -32,9 +32,28 @@ describe('Components / Dropdown', () => {
       const user = userEvent.setup();
       render(<TestDropdown />);
 
-      act(() => {
-        user.click(button());
-        userEvent.click(dropdownItem());
+      await act(async () => {
+        await user.click(button());
+        return userEvent.click(dropdownItem());
+      });
+
+      expect(dropdown()).toHaveClass('invisible');
+    });
+
+    it('should collapse if item is clicked multiple times', async () => {
+      const user = userEvent.setup();
+      render(<TestDropdown />);
+
+      await act(async () => {
+        await user.click(button());
+        return userEvent.click(dropdownItem());
+      });
+
+      expect(dropdown()).toHaveClass('invisible');
+
+      await act(async () => {
+        await user.click(button());
+        return userEvent.click(dropdownItem());
       });
 
       expect(dropdown()).toHaveClass('invisible');
@@ -46,11 +65,15 @@ describe('Components / Dropdown', () => {
 
       expect(dropdown()).toHaveClass('invisible');
 
-      await user.click(button());
+      await act(async () => {
+        return user.click(button());
+      });
 
       expect(dropdown()).not.toHaveClass('invisible');
 
-      await user.click(dropdownItem());
+      await act(async () => {
+        return user.click(dropdownItem());
+      });
 
       expect(dropdown()).not.toHaveClass('invisible');
     });
